@@ -7,20 +7,42 @@ source("lib/helpers.R")
 # politeness <- read.csv("http://www.bodowinter.com/tutorial/politeness_data.csv")
 # write.csv(politeness, "data/politeness_data.csv", row.names = FALSE)
 
+# Leer datos
 politeness <- read.csv("data/politeness_data.csv")
 head(politeness)
 
+
+# Exploratorio ------------------------------------------------------------
 # Hay un dato faltante en frequency
 apply(politeness, 2, function(x) sum(is.na(x)))
 
-# Ver diferencias en el pitch por actitud y genero
+# Por individuo vemos diferencias entre hombres (mas bajos) y mujeres (altos)
 politeness %>%
-  filter(!is.na(frequency)) %>%
-  mutate(attitude.gender = paste(attitude, gender, sep = "_")) %>%
-  ggplot(aes(factor(attitude.gender), frequency, fill = gender)) +
+  ggplot(aes(factor(subject), frequency, fill = gender)) +
   geom_boxplot()
 
-# Crear el modelo
+# Diferencia en frequency por attitude
+politeness %>%
+  ggplot(aes(factor(attitude), frequency)) +
+  geom_boxplot()
+
+# Attitude por male/female
+politeness %>%
+  ggplot(aes(factor(attitude), frequency, fill = gender)) +
+  geom_boxplot()
+
+# Scenario
+politeness %>%
+  ggplot(aes(factor(scenario), frequency)) +
+  geom_boxplot()
+
+# Scenario male / female  
+politeness %>%
+  ggplot(aes(factor(gender), frequency, fill = factor(scenario))) +
+  geom_boxplot()
+
+
+# Crear el modelo ---------------------------------------------------------
 # Este modelo no considera el efecto del genero
 politeness.model <- lmer(frequency ~ 
                            attitude +
